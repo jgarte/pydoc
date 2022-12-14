@@ -68,6 +68,12 @@
   :group 'pydoc)
 
 
+(defcustom pydoc-pip-command "pip --version"
+  "The command to use to get the pip version."
+  :type 'string
+  :group 'pydoc)
+
+
 (defcustom pydoc-make-method-buttons t
   "If non-nil, create buttons for methods."
   :type 'boolean
@@ -471,7 +477,7 @@ Adapted from `help-make-xrefs'."
 
 (defun pydoc-pip-version ()
   "Return a list of (major minor revision) for the pip version."
-  (let* ((output (shell-command-to-string "pip --version"))
+  (let* ((output (shell-command-to-string pydoc-pip-command))
 	 (string-version (nth 1 (split-string output " " t)))
 	 (string-major-minor-rev (split-string string-version "\\.")))
     (mapcar
@@ -572,7 +578,7 @@ These are lines marked by `pydoc-example-code-leader-re'."
 
 (defun pydoc-latex-overlays-1 (limit)
   "Overlay images on \(eqn\) up to LIMIT."
-  (while (re-search-forward "\\\\([^ ]*?\\\\)" limit t)
+  (while (re-search-forward "\\\\([^�]*?\\\\)" limit t)
     (save-restriction
       (save-excursion
 	(narrow-to-region (match-beginning 0) (match-end 0))
@@ -585,7 +591,7 @@ These are lines marked by `pydoc-example-code-leader-re'."
 
 (defun pydoc-latex-overlays-2 (limit)
   "Overlay images on \[eqn\] up to LIMIT."
-  (while (re-search-forward "\\\\\\[[^ ]*?\\\\\\]" limit t)
+  (while (re-search-forward "\\\\\\[[^�]*?\\\\\\]" limit t)
     (save-restriction
       (save-excursion
 	(narrow-to-region (match-beginning 0) (match-end 0))
@@ -598,7 +604,7 @@ These are lines marked by `pydoc-example-code-leader-re'."
 
 (defun pydoc-latex-overlays-3 (limit)
   "Overlay images on $$eqn$$ up to LIMIT."
-  (while (re-search-forward "\\$\\$[^ ]*?\\$\\$" limit t)
+  (while (re-search-forward "\\$\\$[^�]*?\\$\\$" limit t)
     (save-restriction
       (save-excursion
 	(narrow-to-region (match-beginning 0) (match-end 0))
@@ -612,7 +618,11 @@ These are lines marked by `pydoc-example-code-leader-re'."
 (defun pydoc-latex-overlays-4 (limit)
   "Overlay images on $eqn$ up to LIMIT.
 this is less robust than useing \(\)"
-  (while (re-search-forward "\\([^$]\\|^\\)\\(\\(\\$\\([^	\n,;.$][^$\n]*?\\(\n[^$\n]*?\\)\\{0,2\\}[^	\n,.$]\\)\\$\\)\\)\\([-	.,?;:'\") ]\\|$\\)" limit t)
+  (while (re-search-forward "\\([^$]\\|^\\)\\(\\(\\$\\([^	
+\n,;.$][^$\n
+]*?\\(\n[^$\n
+]*?\\)\\{0,2\\}[^	
+\n,.$]\\)\\$\\)\\)\\([-	.,?;:'\")�]\\|$\\)" limit t)
     (save-restriction
       (save-excursion
 	(narrow-to-region (match-beginning 0) (match-end 0))
